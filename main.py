@@ -12,6 +12,7 @@ from utils.fundamentals import fetch_fundamentals
 def get_fundamentals_cached(ticker):
     return fetch_fundamentals(ticker)
 
+
 # =========================
 # PAGE CONFIG
 # =========================
@@ -41,6 +42,10 @@ period = st.selectbox(
     index=2  # default 5y
 )
 
+@st.cache_data(ttl=3600)
+def get_prices_cached(ticker, period=period):
+    return fetch_data(ticker, period)
+
 # =========================
 # TAB FUNCTIONS
 # =========================
@@ -61,7 +66,7 @@ def portfolio_risk_tab(tickers, weights):
         """)
 
     for ticker in tickers:
-        prices = fetch_data(ticker, period=period)
+        prices = get_prices_cached(ticker, period)
         daily_returns = calculate_daily_returns(prices)
         all_returns[ticker] = daily_returns
 
@@ -119,7 +124,7 @@ def technical_tab(tickers):
 
     fig, ax = plt.subplots(figsize=(10, 4))
     for ticker in tickers:
-        prices = fetch_data(ticker)
+        prices = get_prices_cached(ticker, period)
         prices_normalized = prices / prices.iloc[0] * 100
         ax.plot(prices_normalized, label=ticker)
 
@@ -133,7 +138,7 @@ def technical_tab(tickers):
     st.subheader("📉 RSI Charts")
 
     for ticker in tickers:
-        prices = fetch_data(ticker)
+        prices = get_prices_cached(ticker, period)
         rsi = calculate_rsi(prices)
 
         fig, ax = plt.subplots(figsize=(10, 4))
