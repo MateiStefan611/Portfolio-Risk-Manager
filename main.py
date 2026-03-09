@@ -8,6 +8,10 @@ from utils.returns import calculate_daily_returns
 from utils.technical import calculate_rsi
 from utils.fundamentals import fetch_fundamentals
 
+@st.cache_data(ttl=3600)
+def get_fundamentals_cached(ticker):
+    return fetch_fundamentals(ticker)
+
 # =========================
 # PAGE CONFIG
 # =========================

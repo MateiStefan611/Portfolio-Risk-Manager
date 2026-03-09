@@ -3,7 +3,17 @@ import yfinance as yf
 def fetch_fundamentals(ticker):
     try:
         stock = yf.Ticker(ticker)
-        info = stock.info
+
+        try:
+            info = stock.get_info()
+        except:
+            info = {}
+
+        if not info:
+            try:
+                info = stock.info
+            except:
+                info = {}
 
         return {
             "trailingPE": info.get("trailingPE"),
