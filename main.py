@@ -42,9 +42,6 @@ period = st.selectbox(
     index=2  # default 5y
 )
 
-@st.cache_data(ttl=3600)
-def get_prices_cached(ticker, period=period):
-    return fetch_data(ticker, period)
 
 # =========================
 # TAB FUNCTIONS
@@ -66,7 +63,7 @@ def portfolio_risk_tab(tickers, weights):
         """)
 
     for ticker in tickers:
-        prices = get_prices_cached(ticker, period)
+        prices = fetch_data(ticker, period=period)
         daily_returns = calculate_daily_returns(prices)
         all_returns[ticker] = daily_returns
 
@@ -124,7 +121,7 @@ def technical_tab(tickers):
 
     fig, ax = plt.subplots(figsize=(10, 4))
     for ticker in tickers:
-        prices = get_prices_cached(ticker, period)
+        prices = fetch_data(ticker)
         prices_normalized = prices / prices.iloc[0] * 100
         ax.plot(prices_normalized, label=ticker)
 
@@ -138,7 +135,7 @@ def technical_tab(tickers):
     st.subheader("📉 RSI Charts")
 
     for ticker in tickers:
-        prices = get_prices_cached(ticker, period)
+        prices = fetch_data(ticker)
         rsi = calculate_rsi(prices)
 
         fig, ax = plt.subplots(figsize=(10, 4))
